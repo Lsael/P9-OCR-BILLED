@@ -19,7 +19,7 @@ export default class NewBill {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
 
-    if(file.type !== ("image/jpg" || "image/jpeg" || "image/png")) {
+    if(file.type !== ("image/jpg" && "image/jpeg" && "image/png")) {
       throw new Error('File must be type of jpg, jpeg or png')
     }
 
