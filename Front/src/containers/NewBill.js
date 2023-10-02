@@ -18,13 +18,18 @@ export default class NewBill {
   handleChangeFile = e => {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+
+    if(file.type !== ("image/jpg" || "image/jpeg" || "image/png")) {
+      throw new Error('File must be type of jpg, jpeg or png')
+    }
+
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
     formData.append('email', email)
-
+    
     this.store
       .bills()
       .create({
