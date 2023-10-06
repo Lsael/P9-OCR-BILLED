@@ -3,10 +3,12 @@
  */
 
 import {screen, waitFor} from "@testing-library/dom"
+import userEvent from '@testing-library/user-event'
 import BillsUI from "../views/BillsUI.js"
 import { bills } from "../fixtures/bills.js"
 import { ROUTES_PATH} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
+import BillsContainer from "../containers/Bills.js"
 
 import router from "../app/Router.js";
 
@@ -41,5 +43,13 @@ describe("Given I am connected as an employee", () => {
 
       expect(dates).toEqual(datesSorted)
     })
+
+    test("When I click on 'new bill' I am redirected to new bill page", async () => {
+      userEvent.click(screen.getByTestId("btn-new-bill"))
+      const url = window.location
+
+      expect(url.hash).toEqual("#employee/bill/new")
+    })
   })
 })
+
