@@ -13,21 +13,25 @@ import BillsContainer from "../containers/Bills.js"
 import router from "../app/Router.js";
 
 describe("Given I am connected as an employee", () => {
+  Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+  window.localStorage.setItem('user', JSON.stringify({
+    type: 'Employee'
+  }))
+
   describe("When I am on Bills Page", () => {
-    test("Then bill icon in vertical layout should be highlighted", async () => {
-
-      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-      window.localStorage.setItem('user', JSON.stringify({
-        type: 'Employee'
-      }))
-
+    const setBillsTestPage = () => {
       const root = document.createElement("div")
       root.setAttribute("id", "root")
       document.body.append(root)
-
+      
       router()
-
+      
       window.onNavigate(ROUTES_PATH.Bills)
+    }
+    
+    test("Then bill icon in vertical layout should be highlighted", async () => {
+      setBillsTestPage()
+
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
 
@@ -45,10 +49,13 @@ describe("Given I am connected as an employee", () => {
     })
 
     test("When I click on 'new bill' I am redirected to new bill page", async () => {
-      userEvent.click(screen.getByTestId("btn-new-bill"))
-      const url = window.location
+      setBillsTestPage()
+      
+      window.onNavigate(ROUTES_PATH.Bills)
 
-      expect(url.hash).toEqual("#employee/bill/new")
+      userEvent.click(screen.getByTestId('btn-new-bill'))
+
+      expect(window.location.hash).toEqual('#employee/bill/new')
     })
   })
 })
