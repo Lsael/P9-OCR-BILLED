@@ -8,7 +8,7 @@ import BillsUI from "../views/BillsUI.js"
 import { bills } from "../fixtures/bills.js"
 import { ROUTES_PATH} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
-import BillsContainer from "../containers/Bills.js"
+import Bills from "../containers/Bills.js"
 
 import router from "../app/Router.js";
 
@@ -50,13 +50,30 @@ describe("Given I am connected as an employee", () => {
 
     test("When I click on 'new bill' I am redirected to new bill page", async () => {
       setBillsTestPage()
-      
-      window.onNavigate(ROUTES_PATH.Bills)
-
       userEvent.click(screen.getByTestId('btn-new-bill'))
-
+  
       expect(window.location.hash).toEqual('#employee/bill/new')
     })
+
+    test("When I click on 'eye icon' the modal show up", async () => {
+      setBillsTestPage()
+      $.fn.modal = jest.fn();
+      
+      await waitFor(() => userEvent.click(screen.getAllByTestId('icon-eye')[0]))
+
+      const modalElement = screen.getByTestId('modale-test-id')
+
+      expect(modalElement.classList).toContain('show')
+    })
+/*     test("When I click on 'eye icon' the modal show up", async () => {
+      setBillsTestPage()
+      
+      $.fn.modal = jest.fn();
+      const handleClickIconEyeFunc = jest.fn(() => Bills.handleClickIconEye())
+
+      await waitFor(() => userEvent.click(screen.findAllByTestId('icon-eye')[0]))
+
+      expect(handleClickIconEyeFunc).toHaveBeenCalled()
+    }) */
   })
 })
-
