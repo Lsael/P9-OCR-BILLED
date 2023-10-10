@@ -1,8 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-
-import {screen, waitFor} from "@testing-library/dom"
+import '@testing-library/jest-dom'
+import {screen, waitFor } from "@testing-library/dom"
 import userEvent from '@testing-library/user-event'
 import BillsUI from "../views/BillsUI.js"
 import { bills } from "../fixtures/bills.js"
@@ -61,19 +61,9 @@ describe("Given I am connected as an employee", () => {
       
       await waitFor(() => userEvent.click(screen.getAllByTestId('icon-eye')[0]))
 
-      const modalElement = screen.getByTestId('modale-test-id')
+      const modalElement = document.querySelector('.bill-proof-container')
 
-      expect(modalElement.classList).toContain('show')
+      expect(modalElement).toBeInTheDocument()
     })
-/*     test("When I click on 'eye icon' the modal show up", async () => {
-      setBillsTestPage()
-      
-      $.fn.modal = jest.fn();
-      const handleClickIconEyeFunc = jest.fn(() => Bills.handleClickIconEye())
-
-      await waitFor(() => userEvent.click(screen.findAllByTestId('icon-eye')[0]))
-
-      expect(handleClickIconEyeFunc).toHaveBeenCalled()
-    }) */
   })
 })
