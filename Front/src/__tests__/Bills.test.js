@@ -8,8 +8,6 @@ import BillsUI from "../views/BillsUI.js"
 import { bills } from "../fixtures/bills.js"
 import { ROUTES_PATH} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
-import Bills from "../containers/Bills.js"
-
 import router from "../app/Router.js";
 
 describe("Given I am connected as an employee", () => {
@@ -62,8 +60,13 @@ describe("Given I am connected as an employee", () => {
       await waitFor(() => userEvent.click(screen.getAllByTestId('icon-eye')[0]))
 
       const modalElement = document.querySelector('.bill-proof-container')
-
       expect(modalElement).toBeInTheDocument()
+    })
+
+    test("On page load, bills informations are valid", async () => {  
+    
+
+    expect(bills).toHaveBeenCalled()
     })
   })
 })
