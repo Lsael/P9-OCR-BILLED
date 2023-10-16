@@ -89,6 +89,6 @@ mot de passe : admin
 ```
 ### employé :
 ```
-utilisateur :  
+utilisateur :  employee@test.tld
 mot de passe : employee
 ```
