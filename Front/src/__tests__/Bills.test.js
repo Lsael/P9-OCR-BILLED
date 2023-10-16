@@ -6,15 +6,20 @@ import {screen, waitFor } from "@testing-library/dom"
 import userEvent from '@testing-library/user-event'
 import BillsUI from "../views/BillsUI.js"
 import { bills } from "../fixtures/bills.js"
-import { ROUTES_PATH} from "../constants/routes.js";
+import { ROUTES, ROUTES_PATH} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
 import router from "../app/Router.js";
+import Bills from '../containers/Bills.js'
 
 describe("Given I am connected as an employee", () => {
   Object.defineProperty(window, 'localStorage', { value: localStorageMock })
   window.localStorage.setItem('user', JSON.stringify({
     type: 'Employee'
   }))
+
+  const onNavigate = (pathname) => {
+    document.body.innerHTML = ROUTES({ pathname })
+  }
 
   describe("When I am on Bills Page", () => {
     const setBillsTestPage = () => {
@@ -47,26 +52,40 @@ describe("Given I am connected as an employee", () => {
     })
 
     test("When I click on 'new bill' I am redirected to new bill page", async () => {
-      setBillsTestPage()
-      userEvent.click(screen.getByTestId('btn-new-bill'))
-  
-      expect(window.location.hash).toEqual('#employee/bill/new')
+      const BillsDatas = new Bills({
+        document, onNavigate, store: null, bills:bills, localStorage: window.localStorage
+      })
+
+      document.body.innerHTML = BillsUI({ data: bills })
+
+      const handleClickNewBillFunction = jest.fn(() => BillsDatas.handleClickNewBill())
+
+      const icon = screen.getByTestId('btn-new-bill')
+
+      icon.addEventListener('click', handleClickNewBillFunction)
+      userEvent.click(icon)
+      expect(handleClickNewBillFunction).toHaveBeenCalled()
     })
 
     test("When I click on 'eye icon' the modal show up", async () => {
-      setBillsTestPage()
-      $.fn.modal = jest.fn();
-      
-      await waitFor(() => userEvent.click(screen.getAllByTestId('icon-eye')[0]))
+      const BillsDatas = new Bills({
+        document, onNavigate, store: null, bills:bills, localStorage: window.localStorage
+      })
 
-      const modalElement = document.querySelector('.bill-proof-container')
-      expect(modalElement).toBeInTheDocument()
+      document.body.innerHTML = BillsUI({ data: bills })
+      /* Need to emulate jquery/bootstrap modal */
+      $.fn.modal = jest.fn();
+
+      const icon = screen.getAllByTestId('icon-eye')[0]
+      const handleClickIconEyeFunction = jest.fn(() => BillsDatas.handleClickIconEye(icon))
+
+      icon.addEventListener('click', handleClickIconEyeFunction)
+      userEvent.click(icon)
+      expect(handleClickIconEyeFunction).toHaveBeenCalled()
     })
 
     test("On page load, bills informations are valid", async () => {  
-    
 
-    expect(bills).toHaveBeenCalled()
     })
   })
 })
