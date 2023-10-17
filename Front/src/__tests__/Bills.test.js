@@ -10,6 +10,7 @@ import { ROUTES, ROUTES_PATH} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
 import router from "../app/Router.js";
 import Bills from '../containers/Bills.js'
+import { formatDate, formatStatus } from "../app/format.js"
 
 describe("Given I am connected as an employee", () => {
   Object.defineProperty(window, 'localStorage', { value: localStorageMock })
@@ -85,7 +86,19 @@ describe("Given I am connected as an employee", () => {
     })
 
     test("On page load, bills informations are valid", async () => {  
+      const BillsInstance = new Bills({
+        document, onNavigate, store: null, bills:bills, localStorage: window.localStorage
+      })
 
+      const spy = jest.spyOn(BillsInstance, 'getBills').mockImplementation(() => bills)
+      const billsDatas = await BillsInstance.getBills()
+
+      document.body.innerHTML = BillsUI({ data: billsDatas })
+      console.log(billsDatas);
+      expect(billsDatas).toBe(bills)
+      expect(screen.getByTestId('tbody').querySelectorAll('tr')[1].querySelectorAll('td')[2]).toBe('')
+
+      spy.mockRestore()
     })
   })
 })
