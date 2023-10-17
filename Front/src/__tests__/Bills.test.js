@@ -8,9 +8,9 @@ import BillsUI from "../views/BillsUI.js"
 import { bills } from "../fixtures/bills.js"
 import { ROUTES, ROUTES_PATH} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
+import {store} from "../__mocks__/store.js";
 import router from "../app/Router.js";
 import Bills from '../containers/Bills.js'
-import { formatDate, formatStatus } from "../app/format.js"
 
 describe("Given I am connected as an employee", () => {
   Object.defineProperty(window, 'localStorage', { value: localStorageMock })
@@ -54,7 +54,7 @@ describe("Given I am connected as an employee", () => {
 
     test("When I click on 'new bill' I am redirected to new bill page", async () => {
       const BillsDatas = new Bills({
-        document, onNavigate, store: null, bills:bills, localStorage: window.localStorage
+        document, onNavigate, store: store, localStorage: window.localStorage
       })
 
       document.body.innerHTML = BillsUI({ data: bills })
@@ -86,19 +86,30 @@ describe("Given I am connected as an employee", () => {
     })
 
     test("On page load, bills informations are valid", async () => {  
-      const BillsInstance = new Bills({
-        document, onNavigate, store: null, bills:bills, localStorage: window.localStorage
-      })
+      setBillsTestPage()
 
-      const spy = jest.spyOn(BillsInstance, 'getBills').mockImplementation(() => bills)
-      const billsDatas = await BillsInstance.getBills()
-
-      document.body.innerHTML = BillsUI({ data: billsDatas })
-      console.log(billsDatas);
-      expect(billsDatas).toBe(bills)
-      expect(screen.getByTestId('tbody').querySelectorAll('tr')[1].querySelectorAll('td')[2]).toBe('')
-
-      spy.mockRestore()
+      const body = await screen.getByTestId('tbody')
+      expect(body).toBeInTheDocument()
+      const rows = document.querySelectorAll('tr')
+      expect(rows).toHaveLength(5)
+      const row1 = rows[1].querySelectorAll('td')
+      expect(row1[2].textContent).toBe("2004-04-04")
+      expect(row1[4].textContent).toBe("pending")
     })
   })
 })
+
+/* test("On page load, bills informations are valid", async () => {  
+  const BillsInstance = new Bills({
+    document, onNavigate, store: bills, localStorage: window.localStorage
+  })
+
+  const spy = jest.spyOn(BillsInstance, 'getBills').mockImplementation(() => bills)
+  const billsDatas = await BillsInstance.getBills()
+
+  document.body.innerHTML = BillsUI({ data: billsDatas })
+  console.log(billsDatas);
+  expect(billsDatas).toBe(bills)
+
+  spy.mockRestore()
+}) */
