@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+
 import { toBeInTheDocument } from '@testing-library/jest-dom'
 import { screen, waitFor } from "@testing-library/dom"
 import userEvent from '@testing-library/user-event'
@@ -16,27 +17,18 @@ jest.mock("../app/store", () => mockStore)
 
 describe("Given I am connected as an employee", () => {  
   describe("When I am on Bills Page", () => {
-    Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-    window.localStorage.setItem('user', JSON.stringify({
-      type: 'Employee'
-    }))
-  
-    const onNavigate = (pathname) => {
-      document.body.innerHTML = ROUTES({ pathname })
-    }
-    
-    const setBillsTestPage = () => {
+    test("Then bill icon in vertical layout should be highlighted", async () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+
       const root = document.createElement("div")
       root.setAttribute("id", "root")
       document.body.append(root)
-      
       router()
-      
-      window.onNavigate(ROUTES_PATH.Bills)
-    }
 
-    test("Then bill icon in vertical layout should be highlighted", async () => {
-      setBillsTestPage()
+      window.onNavigate(ROUTES_PATH.Bills)
 
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
@@ -55,6 +47,15 @@ describe("Given I am connected as an employee", () => {
     })
 
     test("When I click on 'new bill' I am redirected to new bill page", async () => {
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+
       const BillsDatas = new Bills({
         document, onNavigate, store: null, localStorage: window.localStorage
       })
@@ -63,14 +64,24 @@ describe("Given I am connected as an employee", () => {
 
       const handleClickNewBillFunction = jest.fn(() => BillsDatas.handleClickNewBill())
 
+      await waitFor(() => screen.getByTestId('btn-new-bill'))
       const icon = screen.getByTestId('btn-new-bill')
 
       icon.addEventListener('click', handleClickNewBillFunction)
-      await waitFor(() => userEvent.click(icon))
+      userEvent.click(icon)
       expect(handleClickNewBillFunction).toHaveBeenCalled()
     })
 
     test("When I click on 'eye icon' the modal show up", async () => {
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+      
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+
       const BillsDatas = new Bills({
         document, onNavigate, store: null, bills:bills, localStorage: window.localStorage
       })
@@ -79,6 +90,7 @@ describe("Given I am connected as an employee", () => {
       // Need to emulate jquery/bootstrap modal
       $.fn.modal = jest.fn();
 
+      await waitFor(() => screen.getAllByTestId('icon-eye')[0])
       const icon = screen.getAllByTestId('icon-eye')[0]
       const handleClickIconEyeFunction = jest.fn(() => BillsDatas.handleClickIconEye(icon))
 
@@ -89,7 +101,12 @@ describe("Given I am connected as an employee", () => {
     })
 
     test("On page load, bills informations are valid", async () => {  
-      setBillsTestPage()
+      const root = document.createElement("div")
+      root.setAttribute("id", "root")
+      document.body.append(root)
+      router()
+
+      window.onNavigate(ROUTES_PATH.Bills)
 
       document.body.innerHTML = BillsUI({ data: bills })
 
@@ -118,17 +135,17 @@ describe("Given I am a user connected as an Employee", () => {
       window.onNavigate(ROUTES_PATH.Bills)
 
       await waitFor(() => screen.getByText("Nouvelle note de frais"))
-      const BillsType  = await screen.getByText("Type")
+      const BillsType  = screen.getByText("Type")
       expect(BillsType).toBeTruthy()
-      const BillsName  = await screen.getByText("Nom")
+      const BillsName  = screen.getByText("Nom")
       expect(BillsName).toBeTruthy()
-      const BillsDate  = await screen.getByText("Date")
+      const BillsDate  = screen.getByText("Date")
       expect(BillsDate).toBeTruthy()
-      const BillsAmount  = await screen.getByText("Montant")
+      const BillsAmount  = screen.getByText("Montant")
       expect(BillsAmount).toBeTruthy()
-      const BillsStatut  = await screen.getByText("Statut")
+      const BillsStatut  = screen.getByText("Statut")
       expect(BillsStatut).toBeTruthy()
-      const BillsActions  = await screen.getByText("Actions")
+      const BillsActions  = screen.getByText("Actions")
       expect(BillsActions).toBeTruthy()
       expect(screen.getByTestId("btn-new-bill")).toBeInTheDocument()
     })
