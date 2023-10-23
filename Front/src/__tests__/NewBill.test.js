@@ -3,7 +3,7 @@
  */
 
 import { toBeInTheDocument } from '@testing-library/jest-dom';
-import { screen, waitFor } from '@testing-library/dom';
+import { fireEvent, screen, waitFor } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import NewBillUI from '../views/NewBillUI.js';
 import NewBill from '../containers/NewBill.js';
@@ -228,10 +228,13 @@ describe('Given I am connected as an employee', () => {
   });
 });
 
+
+
 // test d'intégration POST
 describe('Given I am a user connected as an Employee', () => {
   describe('When I send my bill, it is added in the bills list', () => {
     test('fetches bills from mock API GET', async () => {
+      document.body.innerHTML = ''
       localStorage.setItem('user', JSON.stringify({ type: 'Employee' }));
       const root = document.createElement('div');
       root.setAttribute('id', 'root');
@@ -240,6 +243,9 @@ describe('Given I am a user connected as an Employee', () => {
       router();
 
       window.onNavigate(ROUTES_PATH.NewBill);
+      
+      await waitFor(() => screen.getByText('Envoyer'));
+      const submitButton = screen.getByText('Envoyer');
 
       await waitFor(() => screen.getByTestId('expense-type'));
       const expenseSelect = screen.getByTestId('expense-type');
@@ -249,18 +255,24 @@ describe('Given I am a user connected as an Employee', () => {
       const tvaAmount = screen.getByTestId('vat');
       const tvaRate = screen.getByTestId('pct');
       const commentary = screen.getByTestId('commentary');
-      const filePicker = screen.getByTestId('file');
-
-      expenseSelect.value = "Transports"
-      expenseName.value = "Ma dépense Test"
-      datePicker.value = "01-01-1990"
-      amount.value = 348
-      tvaAmount.value = 70
-      tvaRate.value = 20
-      commentary.value = "Petit voyage quelquepart"
-      filePicker.value = ""
       
-      // Building POST test
+      fireEvent.change(expenseSelect, { target: { value:'Transports'} })
+      fireEvent.change(expenseName, { target: { value:'Ma dépense Test'} })
+      fireEvent.change(datePicker, { target: { value:'23-10-2023'} })
+      fireEvent.change(amount, { target: { value:'348'} })
+      fireEvent.change(tvaAmount, { target: { value:'70'} })
+      fireEvent.change(tvaRate, { target: { value:'20'} })
+      fireEvent.change(commentary, { target: { value:'Petit voyage quelquepart'} })
+      
+      await waitFor(() => screen.getByTestId('file'));
+      const fileButton = screen.getByTestId('file');
+      
+      const fakeFile = new File(['test'], 'test.png', { type: 'image/png' });
+      userEvent.upload(fileButton, fakeFile);
+
+      userEvent.click(submitButton);
+      
+      expect(window.location.hash).toBe('#employee/bills')
     });
     describe('When an error occurs on API', () => {
       beforeEach(() => {
