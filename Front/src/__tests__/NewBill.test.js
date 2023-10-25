@@ -228,12 +228,10 @@ describe('Given I am connected as an employee', () => {
   });
 });
 
-
-
 // test d'intégration POST
 describe('Given I am a user connected as an Employee', () => {
-  describe('When I send my bill, it is added in the bills list', () => {
-    test('fetches bills from mock API GET', async () => {
+  describe('When I click on send button', () => {
+    test('POST bills', async () => {
       document.body.innerHTML = ''
       localStorage.setItem('user', JSON.stringify({ type: 'Employee' }));
       const root = document.createElement('div');
