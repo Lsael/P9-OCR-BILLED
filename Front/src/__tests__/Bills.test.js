@@ -130,12 +130,9 @@ describe('Given I am connected as an employee', () => {
 
       const body = screen.getByTestId('tbody');
       const rows = document.querySelectorAll('tr');
-      const row1 = rows[1].querySelectorAll('td');
 
       expect(body).toBeInTheDocument();
       expect(rows).toHaveLength(5);
-      expect(row1[2].textContent).toBe('2004-04-04');
-      expect(row1[4].textContent).toBe('pending');
     });
   });
 });
@@ -160,6 +157,8 @@ describe('Given I am a user connected as an Employee', () => {
       const BillsAmount = screen.getByText('Montant');
       const BillsStatut = screen.getByText('Statut');
       const BillsActions = screen.getByText('Actions');
+      const rows = document.querySelectorAll('tr');
+      const row1 = rows[1].querySelectorAll('td');
 
       expect(BillsType).toBeTruthy();
       expect(BillsName).toBeTruthy();
@@ -168,6 +167,11 @@ describe('Given I am a user connected as an Employee', () => {
       expect(BillsStatut).toBeTruthy();
       expect(BillsActions).toBeTruthy();
       expect(screen.getByTestId('btn-new-bill')).toBeInTheDocument();
+      expect(row1[0].textContent).toBe('Hôtel et logement');
+      expect(row1[1].textContent).toBe('encore');
+      expect(row1[2].textContent).toBe('2004-04-04');
+      expect(row1[3].textContent).toBe('400 €');
+      expect(row1[4].textContent).toBe('pending');
     });
     describe('When an error occurs on API', () => {
       beforeEach(() => {
