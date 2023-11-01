@@ -159,7 +159,7 @@ describe('Given I am connected as an employee', () => {
       expect(submitButton).toHaveAttribute('type', 'submit');
     });
 
-    test('When I change the file, it should be updated', async () => {
+    test('When I change the file, method should be called', async () => {
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
@@ -193,7 +193,7 @@ describe('Given I am connected as an employee', () => {
       expect(handleChangeFileFunction).toHaveBeenCalled();
     });
 
-    test('When I change the file, it should be updated', async () => {
+    test('When I click on send, submit method should be called', async () => {
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
